@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +17,6 @@ import com.example.Bookstore.domain.Book;
 import com.example.Bookstore.domain.BookRepository;
 import com.example.Bookstore.domain.CategoryRepository;
 
-
-
 @Controller
 public class BookController {
 	@Autowired
@@ -24,24 +24,47 @@ public class BookController {
 	@Autowired
 	private CategoryRepository catRepository;
 
-//book list
-	@RequestMapping(value = "/booklist", method = RequestMethod.GET)
-	public String Books(Model model) {
+//log in
+	//returning booklist
+//	@RequestMapping(value = { "/", "/booklist" })
+	//public String homeSecure(Model model) {
+		//model.addAttribute("books", repository.findAll());
+		//return "booklist";
+	//}
+	@RequestMapping(value = "/login")
+	public String login() {
+		return "login";
+	}
+
+	//ensuring login details
+	@RequestMapping(value = "/booklist")
+	public String helloSecure(Model model) {
+		UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String username = user.getUsername();
+		//System.out.println("USERNAME: " + username);
+		model.addAttribute("name", username);
 		model.addAttribute("books", repository.findAll());
 		return "booklist";
 	}
-	
-//REST get all books
-	  @RequestMapping(value="/books", method = RequestMethod.GET)
-	    public @ResponseBody List<Book> bookListRest() {	
-	        return (List<Book>) repository.findAll();
-	    }    
 
-		// RESTful service to get student by id
-	    @RequestMapping(value="/book/{id}", method = RequestMethod.GET)
-	    public @ResponseBody Optional<Book> findBookRest(@PathVariable("id") Long bookId) {	
-	    	return repository.findById(bookId);
-	    } 
+//book list
+	//@RequestMapping(value = "/booklist", method = RequestMethod.GET)
+	//public String Books(Model model) {
+	//	model.addAttribute("books", repository.findAll());
+	//	return "booklist";
+//	}
+
+//REST get all books
+	@RequestMapping(value = "/books", method = RequestMethod.GET)
+	public @ResponseBody List<Book> bookListRest() {
+		return (List<Book>) repository.findAll();
+	}
+
+	// RESTful service to get student by id
+	@RequestMapping(value = "/book/{id}", method = RequestMethod.GET)
+	public @ResponseBody Optional<Book> findBookRest(@PathVariable("id") Long bookId) {
+		return repository.findById(bookId);
+	}
 
 //new book
 	@RequestMapping(value = "/addbook", method = RequestMethod.GET)
@@ -63,15 +86,17 @@ public class BookController {
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
 	public String deletebook(@PathVariable("id") Long bookId, Model model) {
 		repository.deleteById(bookId);
-		return "redirect:../booklist";
+		return "booklist";
 	}
 
 //edit book
-	@RequestMapping(value="/editbook/{id}")
+	@RequestMapping(value = "/editbook/{id}")
 	public String editbook(@PathVariable("id") Long bookId, Model model) {
 		model.addAttribute("book", repository.findById(bookId));
 		model.addAttribute("categories", catRepository.findAll());
 		return "editbook";
 	}
+
+	
 
 }
