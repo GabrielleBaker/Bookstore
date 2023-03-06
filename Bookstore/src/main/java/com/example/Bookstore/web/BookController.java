@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,10 @@ public class BookController {
 	public String login() {
 		return "login";
 	}
+	@RequestMapping(value = "/logout")
+	public String logout() {
+		return "login";
+	}
 
 	//ensuring login details
 	@RequestMapping(value = "/booklist")
@@ -60,7 +65,7 @@ public class BookController {
 		return (List<Book>) repository.findAll();
 	}
 
-	// RESTful service to get student by id
+	// RESTful service to get book by id
 	@RequestMapping(value = "/book/{id}", method = RequestMethod.GET)
 	public @ResponseBody Optional<Book> findBookRest(@PathVariable("id") Long bookId) {
 		return repository.findById(bookId);
@@ -84,9 +89,10 @@ public class BookController {
 
 //delete book
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public String deletebook(@PathVariable("id") Long bookId, Model model) {
 		repository.deleteById(bookId);
-		return "booklist";
+		return "redirect:../booklist";
 	}
 
 //edit book

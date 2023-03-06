@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head>
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"><head>
 <title>Booklist Gabrielle Baker</title>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
 <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css"
@@ -41,9 +40,9 @@
 		</table>
 		<a href="/addbook" class="btn btn-success">Add Book</a>
 	</div>
-	
+
 	<form th:action="@{/logout}" method="post">
-            <input type="submit" value="Sign Out"/>
-        </form>
+		<input type="submit" value="Sign Out" />
+	</form>
 </body>
 </html>
